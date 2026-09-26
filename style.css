@@ -1,0 +1,340 @@
+/* ==========================
+1. Root 변수(컬러 팔레트 및 기본 설정)
+============================*/
+
+:root {
+  /* 라벤더&라이트그린 파스텔 컬러 */
+
+  --primary-lavender: #e0d4f5; /* 부드러운 파스텔 라벤더(활성화, 포인트) */
+  --primary-lavender-dark: #bca3e0; /* 조금 더 진한 아벤더(로고, 호버) */
+  --secondary-green: #d4ead5; /*파스텔 라이트 그린(버튼, 호버 배경)  */
+  --secondary-green-dark: #a3d4a7; /* 진한 라이트 그린(진행바 등) */
+
+  /*배경, 표면, 텍스트 컬러  */
+  --bg-color: #f9f7fc; /* 아주 옅은 라벤더빛 배경(메인 영역) */
+  --surface-color: #ffffff; /* 카드, 사이드바 배경(흰색) */
+  --text-main: #4a4453; /* 진한 보라빛 회색(기본 텍스트) */
+  --text-muted: #8e8895; /* 연한 텍스트(서브 타이틀 등) */
+  --border-color: #eae3f2; /* 부드러운 경계선 컬러 */
+  --soft-shadow: 0 8px 24px rgba(188, 163, 224, 0.15); /* 라벤더 톤이 섞인 그림자 */
+  /* 플레이어 높이를 변수로 뺀다.
+사이드바와 메인의 높이 계산에 세 번 쓰이므로,
+숫자를 직접 적으면 하나만 고쳐도 레이아웃이 깨지므로 주의 */
+  --player-height: 80px;
+}
+
+/* ======================================
+2. 값 초기화
+리셋/전역 스타일
+==========================================*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  /* 하단 플레이어가 컨텐츠를 가리지 않도록 플레이어 높이만큼 여백 확보 */
+  padding-bottom: 90px;
+  /* 문서 전체의 스크롤을 막는다. */
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ======================================
+3. Layout (사이드바 + 메인 콘텐츠)
+==========================================*/
+
+.app-layout {
+  /* flexbox 레이아웃 활성화 */
+  /* 컨테이너 내부의 요소들(자식 요소들)을 쉽게 가로 또는 세로로 유연하게 배치하고 정렬하기 위함 */
+  display: flex;
+  /* Viewport Height(보이는 화면의 높이)를 의미 */
+  min-height: 100vh;
+}
+
+/* 사이드바 영역 */
+.sidebar {
+  width: 260px;
+  background-color: var(--surface-color);
+  border-right: none;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  /* 로고, 네비게이션, 플레이리스트 사이 간격 */
+  gap: 40px;
+  /* 패딩을 너비/높이에 포함 & 부모 높이 따라 늘어지지 않게 고정 */
+  box-sizing: border-box;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  /* 하단 플레이어의 영역의 높이를 빼고 계산 
+  이 높이가 있어야 안에 콘텐츠들이 넘침을 판단할 수 있음*/
+  height: calc(100vh - var(--player-height, 90px));
+  /* 내용이 넘치면 이 안에서만 세로 스크롤이 생성 */
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+/* 스크롤바를 파스텔 톤으로 예쁘게 만들고 항상 보이게 강제 표시 */
+.sidebar::-webkit-scrollbar,
+.main-content::-webkit-scrollbar {
+  /* 스크롤바 너비 */
+  width: 5px;
+}
+
+/* 스크롤바 막대(Thumb) 디자인 */
+.sidebar::-webkit-scrollbar-thumb,
+.main-content::-webkit-scrollbar-thumb {
+  background-color: var(--primary-lavender-dark);
+  border-radius: 5px;
+}
+
+/* 스크롤바 뒷배경(Track) 통일 */
+.sidebar::-webkit-scrollbar-track,
+.main-content::-webkit-scrollbar-track {
+  background-color: var(--border-color);
+  border-radius: 5px;
+  background-color: transparent;
+}
+
+.logo {
+  color: var(--primary-lavender-dark);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/*  메뉴 및 플레이리스트 아이템 공통 스타일 */
+.nav-item,
+.playlist-artist {
+  /* 가로 공간 100% 차지 */
+  display: block;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  font-weight: 400;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 마우스 호버 시 라이트 그린 적용 */
+
+.playlist-artist:hover {
+  background-color: var(--secondary-green);
+  color: var(--text-main);
+}
+
+/* 활성화된 메뉴(홈) */
+.nav-item.active {
+  background-color: var(--primary-lavender);
+  font-weight: 700;
+}
+
+.player-list h3 {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ======================================
+4. Main Content & Album Grid
+==========================================*/
+
+.main-content {
+  flex: 1; /* 남은 우측 공간 모두 차지 */
+  padding: 48px; /* 상, 우, 하, 좌 모든 방향에 동일한 크기의 여백 적용 */
+
+  /* 메인 영역의 높이를 제한하고 자체 스크롤 생성 */
+  height: calc(100vh - var(--player-height, 90px));
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.main-content h2 {
+  font-size: 26px;
+  margin-bottom: 32px;
+}
+
+/* 이미지들을 4개씩 배열되도록 그리드 설정 */
+.album-grid {
+  display: grid;
+  /* 4개의 열(칸)을 동일한 크기(1fr)로 배치 */
+  grid-template-columns: repeat(4, 1fr);
+  /* 이미지 사이의 간격(원하는 수치로 조절) */
+  gap: 20px;
+}
+
+/* 개별 앨범 카드 디자인 */
+.album-card {
+  background-color: var(--surface-color);
+  padding: 16px;
+  border-radius: 20px;
+  text-align: center;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+/* 카드에 마우스를 올렸을 때 살짝 위로 떠오르는 효과 */
+.album-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(188, 163, 224, 0.25);
+}
+
+.album-card img {
+  /* 카드의 너비에 맞춤 */
+  width: 100%;
+  aspect-ratio: 1/1; /* 요소의 가로세로 비율을 1:1 (정사각형)로 고정 */
+  /* 이미지나 비디오가 원래의 가로세로 비율을 유지하면서 지정된 공간(컨테이너)을 가득 채우도록 만드는 속성 */
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+
+.album-card h4 {
+  font-size: 16.8px;
+  font-weight: 600;
+}
+
+/* ======================================
+5. Bottom Player (하단 고정 플레이어)
+==========================================*/
+.player {
+  /* 화면 스크롤과 상관없이 특정 위치에 요소 고정 
+  주로 하단 네비게이션이나 재생 바에 쓰임*/
+  position: fixed;
+  /* 화면의 맨 아래(바닥)에 딱 붙임 */
+  bottom: 0;
+  /* 화면의 맨 왼쪽 끝에 딱 붙임 */
+  left: 0;
+  /* 가로 너비를 화면 전체(100%)로 가득 채움 */
+  width: 100%;
+  /* 패딩 포함 너비 계산 */
+  box-sizing: border-box;
+
+  /* 세로 높이를 90px로 고정 */
+  height: 90px;
+  /* 배경색을 흰색(RGB: 255, 255, 255)으로 하고, 0.85(85%)만큼의 불투명도를 주어 살짝 투명하게 만들기 */
+  background-color: rgba(255, 255, 255, 0.85);
+  /* 뒷 배경이 살짝 비치는 반투명 효과 (유리 질감 효과). 뒤에 깔린 요소를 12px만큼 흐리게(블러) 처리 */
+  backdrop-filter: blur(12px);
+  /* 박스 위쪽에 1px 굵기의 실선(solid) 테두리를 만들고, 
+  색상은 미리 지정해 둔 변수를 사용 */
+  border-top: 1px solid var(--border-color);
+  /* 내부 요소(버튼, 텍스트 등)를 쉽게 배치 및 정렬하기 위한 장치 > flexbox 레이아웃 활성화 */
+  display: flex;
+  /* 내부 요소들을 세로(수직) 중앙에 맞게 정렬 */
+  align-items: center;
+  /* 내부 요소들을 양끝으로 밀어내고, 요소들 사이의 간격을 동일하게 맞추기 */
+  justify-content: space-between;
+  /* 안쪽 여백을 위아래는 0, 양옆(좌우)은 32px씩 주기
+  (양끝 텍스트/버튼이 화면 테두리에 너무 붙지 않게 함) */
+  padding: 0 32px;
+  /* 다른 요소들과 겹쳤을 때 이 요소가 항상 맨 위에 보이도록 겹침 순위(Z축)를 아주 높게(1000) 설정 */
+  z-index: 1000;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 30%;
+}
+
+.player-info img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.music-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.song-artist {
+  font-size: 13.6px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* 플레이어 컨트롤 버튼 중앙 정렬 */
+.player-controls {
+  flex: 1; /* 남은 우측 공간 모두 차지 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.player-controls button {
+  background: none;
+  border: none;
+  font-size: 19.2px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.player-controls button:hover {
+  color: var(--primary-lavender-dark);
+}
+
+/* 재생/일시정지 메인 버튼(라벤더 원형) */
+.player-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary-lavender);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 아이콘의 크기를 다르게 설정했더라도 모두 무시하고 이 설정을 따라주세요. */
+  font-size: 24px !important;
+  transition: all 0.3s ease;
+}
+
+/* 재생버튼 마우스 호버 시 아리트 그린으로 변경 */
+.player-btn:hover {
+  background-color: var(--secondary-green);
+}
+
+/* 우측 프로그래스 바 (재생 진행도) */
+.player-bar {
+  width: 30%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.progress {
+  width: 100%;
+  max-width: 250px;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 진행된 만큼 칠해지는 바(진한 라이트 그린) */
+.progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* 임의의 진행도 */
+  width: 45%;
+  background-color: var(--secondary-green-dark);
+  border-radius: 4px;
+}
